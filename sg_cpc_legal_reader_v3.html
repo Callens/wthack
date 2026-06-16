@@ -1,0 +1,385 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:var(--font-sans);}
+.app{display:grid;grid-template-columns:200px 1fr 250px;border:0.5px solid #333;border-radius:var(--border-radius-lg);overflow:hidden;background:#0a0a0a;}
+.sidebar{background:#111;border-right:0.5px solid #2a2a2a;padding:12px 0;}
+.toc-label{font-size:10px;font-weight:500;color:#555;letter-spacing:.07em;text-transform:uppercase;padding:10px 14px 4px;}
+.toc-item{display:block;padding:6px 14px;font-size:12px;color:#888;cursor:pointer;border-left:2px solid transparent;line-height:1.4;}
+.toc-item:hover{background:#1a1a1a;color:#ccc;}
+.toc-item.active{color:#6aa3d5;border-left-color:#6aa3d5;background:#161b22;font-weight:500;}
+.main-col{border-right:0.5px solid #2a2a2a;background:#0d0d0d;}
+.main-header{padding:16px 20px 12px;border-bottom:0.5px solid #2a2a2a;background:#111;}
+.act-label{font-size:11px;color:#555;margin-bottom:3px;}
+.section-h{font-size:15px;font-weight:500;color:#e8e8e8;margin-bottom:10px;}
+.filter-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.flabel{font-size:11px;color:#555;margin-right:2px;}
+.fbtn{font-size:11px;padding:3px 9px;border-radius:20px;border:0.5px solid #333;background:#1a1a1a;color:#888;cursor:pointer;}
+.fbtn:hover{background:#222;color:#ccc;}
+.fbtn.fa{background:#2a2a2a;color:#e0e0e0;border-color:#444;}
+.fbtn.fo{background:#0c2040;color:#6aa3d5;border-color:#1e4d7a;}
+.fbtn.fc{background:#2a1f00;color:#d4a44c;border-color:#5a3e00;}
+.fbtn.fk{background:#2a0a0a;color:#d47070;border-color:#5a1a1a;}
+.provisions{padding:16px 20px;}
+.prov{margin-bottom:16px;border:0.5px solid #2a2a2a;border-radius:var(--border-radius-lg);overflow:hidden;transition:opacity .2s;background:#111;}
+.prov.dim{opacity:.15;}
+.prov-head{padding:9px 14px;display:flex;align-items:flex-start;gap:8px;border-bottom:0.5px solid #2a2a2a;background:#161616;}
+.pnum{font-size:11px;font-weight:500;color:#555;min-width:32px;padding-top:1px;}
+.pname{font-size:12px;font-weight:500;color:#d0d0d0;}
+.tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;}
+.tag{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;}
+.to{background:#0c2040;color:#6aa3d5;}
+.tc{background:#2a1f00;color:#d4a44c;}
+.tk{background:#2a0a0a;color:#d47070;}
+.prov-body{padding:12px 14px;display:flex;flex-direction:column;gap:10px;}
+.ltext{font-size:13px;color:#aaa;line-height:1.8;}
+.ho{background:#0c2040;color:#6aa3d5;border-radius:3px;padding:0 3px;cursor:pointer;border-bottom:1px dashed #2e5f8a;}
+.hc{background:#2a1f00;color:#d4a44c;border-radius:3px;padding:0 3px;cursor:pointer;border-bottom:1px dashed #7a5500;}
+.hk{background:#2a0a0a;color:#d47070;border-radius:3px;padding:0 3px;cursor:pointer;border-bottom:1px dashed #7a2a2a;}
+.tt{display:none;border-radius:var(--border-radius-md);padding:11px 13px;font-size:12px;line-height:1.65;margin-top:2px;border-left:3px solid #444;}
+.tt.show{display:block;}
+.tt-lbl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;}
+.tt-txt{font-size:13px;line-height:1.65;}
+.tt-obligation{background:#0a1a2e;border-left-color:#2e5f8a;}
+.tt-obligation .tt-lbl{color:#4a8abf;}
+.tt-obligation .tt-txt{color:#9bbdd9;}
+.tt-civil{background:#1e1500;border-left-color:#7a5500;}
+.tt-civil .tt-lbl{color:#b8860b;}
+.tt-civil .tt-txt{color:#c8a050;}
+.tt-criminal{background:#1e0808;border-left-color:#7a2a2a;}
+.tt-criminal .tt-lbl{color:#bf4a4a;}
+.tt-criminal .tt-txt{color:#d99090;}
+.sumbar{background:#0f1f0f;border:0.5px solid #1a3a1a;border-radius:var(--border-radius-md);padding:11px 13px;display:flex;gap:8px;align-items:flex-start;margin-top:4px;}
+.sico{color:#4a8a4a;font-size:15px;flex-shrink:0;margin-top:1px;}
+.sum-label{font-size:10px;font-weight:500;color:#4a8a4a;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
+.sum-text{font-size:13px;color:#7abf7a;line-height:1.6;}
+.right-col{background:#0d0d0d;border-left:0.5px solid #2a2a2a;}
+.rp{padding:14px;}
+.rp+.rp{border-top:0.5px solid #1e1e1e;}
+.rp-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#555;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.cc{background:#111;border:0.5px solid #2a2a2a;border-radius:var(--border-radius-md);padding:9px 11px;margin-bottom:7px;}
+.cn{font-size:11px;font-weight:500;color:#6aa3d5;line-height:1.3;margin-bottom:2px;}
+.cit{font-size:10px;color:#444;margin-bottom:3px;}
+.cdesc{font-size:11px;color:#777;line-height:1.5;}
+.ctag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:8px;margin-top:3px;font-weight:500;}
+.dc{background:#111;border:0.5px solid #2a2a2a;border-radius:var(--border-radius-md);padding:9px 11px;margin-bottom:7px;}
+.ddate{font-size:10px;color:#444;margin-bottom:1px;}
+.dspk{font-size:11px;font-weight:500;color:#bbb;}
+.dquote{font-size:11px;color:#666;line-height:1.55;margin-top:4px;border-left:2px solid #2a2a2a;padding-left:7px;}
+.rpill{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:3px 7px;border:0.5px solid #2a2a2a;border-radius:10px;background:#161616;color:#666;margin:0 3px 3px 0;cursor:pointer;}
+.rpill:hover{border-color:#444;color:#aaa;}
+</style>
+
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Singapore CPC interactive legal reader</h2>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="toc-label">Contents</div>
+    <div class="toc-label" style="padding-top:4px">Part I</div>
+    <div class="toc-item" data-sec="s3">s 3 — Interpretation</div>
+    <div class="toc-item" data-sec="s5">s 5 — General authority</div>
+    <div class="toc-label">Part III — Arrest</div>
+    <div class="toc-item" data-sec="s17">s 17 — Arrest by police</div>
+    <div class="toc-item" data-sec="s23">s 23 — Rights on arrest</div>
+    <div class="toc-item" data-sec="s65">s 65 — Bail entitlement</div>
+    <div class="toc-label">Part IV — Search</div>
+    <div class="toc-item" data-sec="s34">s 34 — Search warrants</div>
+    <div class="toc-item" data-sec="s35">s 35 — Search without warrant</div>
+    <div class="toc-label">Part IX — Statements</div>
+    <div class="toc-item" data-sec="s22">s 22 — Duty to attend</div>
+    <div class="toc-item" data-sec="s258">s 258 — Admissibility</div>
+  </div>
+
+  <div class="main-col">
+    <div class="main-header">
+      <div class="act-label">Criminal Procedure Code 2010 — Singapore</div>
+      <div class="section-h" id="sec-heading">s 17 — Arrest by police officer</div>
+      <div class="filter-row">
+        <span class="flabel">Filter:</span>
+        <button class="fbtn fa" id="btn-all">All</button>
+        <button class="fbtn" id="btn-obligation">Civil obligations</button>
+        <button class="fbtn" id="btn-civil">Civil penalties</button>
+        <button class="fbtn" id="btn-criminal">Criminal consequences</button>
+      </div>
+    </div>
+    <div class="provisions" id="prov-list"></div>
+  </div>
+
+  <div class="right-col">
+    <div class="rp">
+      <div class="rp-title"><i class="ti ti-scale" aria-hidden="true"></i>Case law</div>
+      <div id="case-list"></div>
+    </div>
+    <div class="rp">
+      <div class="rp-title"><i class="ti ti-message-circle" aria-hidden="true"></i>Parliamentary debates</div>
+      <div id="debate-list"></div>
+    </div>
+    <div class="rp">
+      <div class="rp-title"><i class="ti ti-link" aria-hidden="true"></i>Related provisions</div>
+      <div id="related-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var DATA = {
+  s3:{
+    title:'s 3 — Interpretation',
+    provs:[
+      {subs:'(1)',tags:['obligation'],
+       text:'In this Code — <span class="ho" data-tt="t3_1" data-type="obligation">"arrestable offence"</span> means an offence for which a police officer may, under the First Schedule or any other written law, <span class="ho" data-tt="t3_2" data-type="obligation">arrest without warrant</span>; <span class="ho" data-tt="t3_3" data-type="obligation">"non-arrestable offence"</span> means an offence for which a police officer shall not arrest without warrant.',
+       tts:{t3_1:{lbl:'Plain English',txt:'An arrestable offence is serious enough that police can detain you on the spot without needing a judge\'s permission first — e.g. robbery, rape, drug trafficking.',type:'obligation'},
+            t3_2:{lbl:'What this means for you',txt:'If you are suspected of an arrestable offence, police can detain you immediately. You do not need to be charged first.',type:'obligation'},
+            t3_3:{lbl:'Plain English',txt:'For less serious offences (e.g. minor traffic violations), police cannot arrest you on the spot — they must first obtain a warrant from a court.',type:'obligation'}},
+       sum:'"Arrestable" = police can detain you on the spot. "Non-arrestable" = they need a court warrant first.'}
+    ],
+    cases:[{name:'Shaaban v Chong Fook Kam [1969]',cite:'[1969] 3 WLR 1349 (PC)',desc:'Privy Council clarified that "reasonable suspicion" for warrantless arrest requires objective facts, not mere suspicion.',tc:'to',tt:'Arrest powers'}],
+    debates:[{date:'Parl Debates, 18 May 2010',spk:'K Shanmugam, Minister for Law',q:'The definitions clause anchors the entire Code. We aligned "arrestable offence" with the First Schedule to give police clarity on when warrantless powers arise.'}],
+    related:['s 17 — Arrest by police','s 34 — Search warrants','First Schedule']
+  },
+  s5:{
+    title:'s 5 — General authority of police',
+    provs:[
+      {subs:'(1)',tags:['obligation'],
+       text:'Subject to any written law, criminal procedure in Singapore shall be regulated under this Code. Any police officer may <span class="ho" data-tt="t5_1" data-type="obligation">exercise such powers</span> as may be conferred by this Code or any other written law, and shall <span class="ho" data-tt="t5_2" data-type="obligation">perform such duties</span> as may be imposed upon him.',
+       tts:{t5_1:{lbl:'Plain English',txt:'Police can only do what the law authorises. If a police action is not permitted by this Code or another statute, it may be unlawful.',type:'obligation'},
+            t5_2:{lbl:'Duties cut both ways',txt:'Police also have duties, not just powers. A failure to act when required can be challenged if unreasonable.',type:'obligation'}},
+       sum:'Police powers must come from law. This section makes the CPC the master rulebook for all criminal procedure in Singapore.'}
+    ],
+    cases:[{name:'Chng Suan Tze v Minister for Home Affairs [1988]',cite:'[1988] 2 SLR(R) 525 (CA)',desc:'All discretionary powers — including police powers — are subject to judicial review and must not be exercised arbitrarily.',tc:'to',tt:'Limits on police power'}],
+    debates:[{date:'Parl Debates, 18 May 2010',spk:'K Shanmugam, Minister for Law',q:'Section 5 is foundational. All criminal procedure flows from this Code — there is no inherent police power outside statute.'}],
+    related:['s 3 — Interpretation','s 17 — Arrest powers','Police Force Act']
+  },
+  s17:{
+    title:'s 17 — Arrest by police officer',
+    provs:[
+      {subs:'(1)',tags:['obligation'],
+       text:'A police officer may, without a warrant, <span class="ho" data-tt="t17_1" data-type="obligation">arrest any person</span> who he reasonably suspects has committed, is committing, or is about to commit an <span class="ho" data-tt="t17_2" data-type="obligation">arrestable offence</span>.',
+       tts:{t17_1:{lbl:'Plain English',txt:'"May arrest" is discretionary — the officer is not obliged to arrest every suspect. But if they do arrest you, they must have a reasonable, articulable basis, not just a hunch.',type:'obligation'},
+            t17_2:{lbl:'What triggers this?',txt:'Only arrestable offences (see s 3 and First Schedule) trigger this warrantless power. For minor non-arrestable offences, police must obtain a court warrant first.',type:'obligation'}},
+       sum:'Police can arrest you without a warrant if they reasonably suspect you committed a serious (arrestable) offence.'},
+      {subs:'(2)',tags:['criminal'],
+       text:'A person who <span class="hk" data-tt="t17_3" data-type="criminal">resists or obstructs</span> a police officer making an arrest commits an offence and shall be liable on conviction to a fine not exceeding <span class="hk" data-tt="t17_4" data-type="criminal">$2,500 or imprisonment for up to one year</span>, or to both.',
+       tts:{t17_3:{lbl:'What counts as obstruction?',txt:'Courts have found that physically pushing an officer or helping another person escape constitutes obstruction. Verbally arguing does not, by itself, qualify.',type:'criminal'},
+            t17_4:{lbl:'Consequence',txt:'This is a criminal sanction — a conviction goes on your record. Fine up to $2,500 and/or up to 1 year imprisonment. Both can be imposed simultaneously.',type:'criminal'}},
+       sum:'Resisting arrest is itself a criminal offence — fine up to $2,500 and/or up to 1 year imprisonment.'}
+    ],
+    cases:[
+      {name:'PP v Lim Ah Poh [1992]',cite:'[1992] 1 SLR(R) 192 (HC)',desc:'"Reasonable suspicion" is an objective test — the officer\'s genuine belief alone is insufficient without objective supporting facts.',tc:'to',tt:'Reasonable suspicion'},
+      {name:'Rajeevan Edakalavan v PP [1998]',cite:'[1998] 1 SLR(R) 497 (HC)',desc:'Clarified police discretion in deciding whether to arrest. Good faith belief is relevant but not determinative.',tc:'tk',tt:'Arrest discretion'}
+    ],
+    debates:[{date:'Parl Debates, 18 May 2010',spk:'K Shanmugam, Minister for Law',q:'We retained the "reasonable suspicion" threshold to balance effective law enforcement with protection against arbitrary detention. Officers must articulate the basis for suspicion.'}],
+    related:['s 3 — Interpretation','s 23 — Rights on arrest','s 65 — Bail','Penal Code s 224 — Resistance to arrest']
+  },
+  s23:{
+    title:'s 23 — Rights of arrested person',
+    provs:[
+      {subs:'(1)',tags:['obligation'],
+       text:'The officer making any arrest must <span class="ho" data-tt="t23_1" data-type="obligation">inform the person arrested</span> of the grounds for the arrest and of the right to communicate with a <span class="ho" data-tt="t23_2" data-type="obligation">lawyer of his choice</span>, unless it is <span class="ho" data-tt="t23_3" data-type="obligation">impracticable</span> to do so.',
+       tts:{t23_1:{lbl:'Your right',txt:'Police must tell you why you are being arrested. If they refuse or give vague reasons, you can raise this at trial — an unlawful arrest may affect admissibility of evidence obtained afterward.',type:'obligation'},
+            t23_2:{lbl:'Right to counsel',txt:'You have the right to call your own lawyer. Police may impose a reasonable delay where investigations would be prejudiced, but cannot deny access indefinitely. Key case: Jasbir Singh v PP.',type:'obligation'},
+            t23_3:{lbl:'Exception clause',txt:'"Impracticable" is narrow — e.g. you are being violent or have just fled. Courts scrutinise this closely. Mere inconvenience does not qualify.',type:'obligation'}},
+       sum:'Police must tell you why you are arrested and inform you of your right to call your own lawyer.'},
+      {subs:'(2)',tags:['obligation','criminal'],
+       text:'Any person arrested shall be <span class="ho" data-tt="t23_4" data-type="obligation">produced before a Magistrate</span> without unnecessary delay, and in any case within <span class="hk" data-tt="t23_5" data-type="criminal">48 hours</span> of the arrest.',
+       tts:{t23_4:{lbl:'Plain English',txt:'You cannot be held in a police station indefinitely. Police must bring you before a judge within 48 hours to either charge you or seek a remand order.',type:'obligation'},
+            t23_5:{lbl:'The 48-hour rule',txt:'If police want to hold you beyond 48 hours without charging you, they must appear before a Magistrate and justify it. The Magistrate can order your release or extend remand.',type:'criminal'}},
+       sum:'You must be brought before a Magistrate within 48 hours of arrest. Police cannot hold you longer without court approval.'}
+    ],
+    cases:[
+      {name:'Jasbir Singh v PP [1994]',cite:'[1994] 1 SLR(R) 782 (HC)',desc:'The right to counsel under s 23 must be honoured within a reasonable time after arrest. Unreasonable delay may render a subsequent statement inadmissible.',tc:'to',tt:'Right to counsel'},
+      {name:'James Raj s/o Arokiasamy v PP [2014]',cite:'[2014] 3 SLR 750 (CA)',desc:'Police may impose a brief delay to counsel access where investigations would genuinely be prejudiced, but the delay must be proportionate.',tc:'tk',tt:'Access delay limits'}
+    ],
+    debates:[
+      {date:'Parl Debates, 18 May 2010',spk:'K Shanmugam, Minister for Law',q:'The 48-hour rule and the right to counsel are constitutional safeguards. We codified them clearly to ensure arrested persons understand their entitlements from the outset.'},
+      {date:'Parl Debates, 19 May 2010',spk:'Sylvia Lim, Workers\' Party',q:'We welcome codification of these rights but call on the Ministry to ensure they are communicated in a language the arrested person understands, not just in English.'}
+    ],
+    related:['s 17 — Arrest powers','s 65 — Bail','s 258 — Admissibility','Constitution Art 9 — Personal liberty']
+  },
+  s65:{
+    title:'s 65 — When person is bailable',
+    provs:[
+      {subs:'(1)',tags:['obligation','civil'],
+       text:'When any person accused of a <span class="ho" data-tt="t65_1" data-type="obligation">bailable offence</span> is arrested or detained without warrant, such person shall be released on bail <span class="hc" data-tt="t65_2" data-type="civil">as of right</span>, unless the person is under 16 years or is accused of an offence punishable with death or imprisonment for life.',
+       tts:{t65_1:{lbl:'Bailable vs non-bailable',txt:'Bailable offences (listed in the First Schedule) are generally less serious — e.g. cheating, forgery. Non-bailable offences (murder, rape, drug trafficking) require a court hearing before bail is considered.',type:'obligation'},
+            t65_2:{lbl:'What "as of right" means',txt:'For bailable offences, bail is automatic — police cannot refuse it based on their own judgment. They set the amount, but cannot keep you detained without charge. You can demand bail.',type:'civil'}},
+       sum:'For bailable offences, you have an automatic right to bail. Police cannot refuse — they can only set the amount.'},
+      {subs:'(2)',tags:['civil'],
+       text:'The <span class="hc" data-tt="t65_3" data-type="civil">amount of bail</span> shall not be excessive. If a person is unable to furnish bail, the officer shall <span class="hc" data-tt="t65_4" data-type="civil">refer the matter</span> to the Magistrate on duty who may reduce the bail amount or grant bail without surety.',
+       tts:{t65_3:{lbl:'What is "excessive"?',txt:'Bail is excessive when set so high it functions as a de facto refusal. The amount must be proportionate to the offence and the accused\'s means.',type:'civil'},
+            t65_4:{lbl:'If you cannot pay',txt:'Ask police to refer you to the Duty Magistrate. The Magistrate can reduce bail or grant a personal bond — your word alone, no money required.',type:'civil'}},
+       sum:'Bail must not be set so high it is effectively a refusal. If you cannot afford it, a Magistrate can reduce the amount.'}
+    ],
+    cases:[
+      {name:'PP v Zaw Win Aung [2018]',cite:'[2018] 5 SLR 1184 (HC)',desc:'Excessive bail is a constitutional violation under Art 9. Court reduced $200,000 bail to $20,000 where accused had limited means.',tc:'tc',tt:'Bail quantum'},
+      {name:'Re Loh Wai Kong [1979]',cite:'[1979] 1 MLJ 19 (HC)',desc:'Bail is a right, not a privilege, for bailable offences. Officers who refuse it unlawfully may render continued detention unlawful.',tc:'to',tt:'Bail as of right'}
+    ],
+    debates:[{date:'Parl Debates, 18 May 2010',spk:'K Shanmugam, Minister for Law',q:'The bail provisions balance the presumption of innocence with the State\'s interest in ensuring trial attendance. We strengthened the Magistrate\'s role as a check on excessive bail.'}],
+    related:['s 17 — Arrest powers','s 23 — Rights on arrest','s 92 — Non-bailable bail','First Schedule']
+  },
+  s34:{
+    title:'s 34 — Issue of search warrant',
+    provs:[
+      {subs:'(1)',tags:['obligation'],
+       text:'A Magistrate may issue a <span class="ho" data-tt="t34_1" data-type="obligation">search warrant</span> where satisfied by information on oath that there is reasonable cause to believe that any place is used for the deposit or sale of <span class="ho" data-tt="t34_2" data-type="obligation">stolen property</span> or any thing which is evidence of an offence, and such thing cannot otherwise be obtained without undue delay.',
+       tts:{t34_1:{lbl:'What is a search warrant?',txt:'A court-issued permission for police to enter and search a specific place. Without it, police generally cannot enter your home or business. The warrant must specify the place and what they are searching for.',type:'obligation'},
+            t34_2:{lbl:'Scope of search',txt:'Police may only search for what the warrant specifies. If a warrant says "stolen electronics", they cannot seize drugs they happen to find — though plain-view offences may lead to a separate arrest.',type:'obligation'}},
+       sum:'Police generally need a court-issued warrant to search your premises. A Magistrate must be satisfied there is good reason.'}
+    ],
+    cases:[{name:'Chng Suan Tze v Minister for Home Affairs [1988]',cite:'[1988] 2 SLR(R) 525 (CA)',desc:'All executive powers — including search powers — are subject to judicial oversight and must not be exercised arbitrarily.',tc:'to',tt:'Judicial oversight'}],
+    debates:[{date:'Parl Debates, 18 May 2010',spk:'K Shanmugam, Minister for Law',q:'The search warrant requirement is a fundamental protection of the home. We retained judicial authorisation as a constitutional safeguard.'}],
+    related:['s 35 — Search without warrant','s 17 — Arrest powers','s 3 — Interpretation']
+  },
+  s35:{
+    title:'s 35 — Search without warrant',
+    provs:[
+      {subs:'(1)',tags:['obligation'],
+       text:'A police officer may <span class="ho" data-tt="t35_1" data-type="obligation">search any place without a warrant</span> if he reasonably believes that a person to be arrested is present, or that evidence is contained there and there is no time to obtain a warrant.',
+       tts:{t35_1:{lbl:'When can police enter without a warrant?',txt:'Only in genuine emergencies — e.g. chasing a suspect into a building, or evidence about to be destroyed. Courts look skeptically at "no time for a warrant" claims made after the fact.',type:'obligation'}},
+       sum:'Police can search without a warrant only in genuine emergencies — a fleeing suspect or evidence about to be destroyed.'},
+      {subs:'(2)',tags:['criminal'],
+       text:'A person who <span class="hk" data-tt="t35_2" data-type="criminal">refuses entry</span> to a police officer entitled to enter without a warrant is guilty of an offence and liable to a fine not exceeding <span class="hk" data-tt="t35_3" data-type="criminal">$1,500</span>.',
+       tts:{t35_2:{lbl:'Can I refuse entry?',txt:'If no genuine emergency exists and no warrant has been issued, you may politely decline and ask police to obtain a warrant. But if they are legally entitled to enter, refusal is a criminal offence.',type:'criminal'},
+            t35_3:{lbl:'Consequence',txt:'Refusing a lawful warrantless search carries a fine up to $1,500. This is a criminal conviction — it goes on your record.',type:'criminal'}},
+       sum:'Blocking a lawful emergency search without a warrant is a criminal offence — fine up to $1,500.'}
+    ],
+    cases:[{name:'PP v Lim Ah Poh [1992]',cite:'[1992] 1 SLR(R) 192 (HC)',desc:'"Reasonable belief" for a warrantless search must be based on objective facts, not merely an officer\'s subjective state of mind.',tc:'to',tt:'Reasonable belief test'}],
+    debates:[{date:'Parl Debates, 18 May 2010',spk:'K Shanmugam, Minister for Law',q:'The warrantless search power is a narrow exception. We expect police to seek judicial authorisation whenever the situation allows time to do so.'}],
+    related:['s 34 — Search with warrant','s 17 — Arrest powers','s 23 — Rights on arrest']
+  },
+  s22:{
+    title:'s 22 — Duty to attend and answer questions',
+    provs:[
+      {subs:'(1)',tags:['obligation'],
+       text:'A police officer making an investigation may orally require any person <span class="ho" data-tt="t22_1" data-type="obligation">to attend before him</span> for examination. That person shall be <span class="ho" data-tt="t22_2" data-type="obligation">legally bound to attend</span> as required.',
+       tts:{t22_1:{lbl:'Do I have to go to the station?',txt:'Yes — if a police officer formally requires your attendance under s 22, you are legally obligated to attend. Ignoring this is itself a criminal offence.',type:'obligation'},
+            t22_2:{lbl:'Legally bound',txt:'"Legally bound" means failure to comply can result in criminal liability. Even if you are merely a witness, not a suspect, you must attend.',type:'obligation'}},
+       sum:'If police formally ask you to attend an investigation interview, you must attend. Refusing is itself a criminal offence.'},
+      {subs:'(2)',tags:['obligation','criminal'],
+       text:'Every person so required shall <span class="ho" data-tt="t22_3" data-type="obligation">answer truly</span> all questions put to him. A person is not excused from answering on the ground that the answer might <span class="hk" data-tt="t22_4" data-type="criminal">tend to incriminate him</span>, but any statement made shall not be used in evidence against the person except in cases of giving false evidence.',
+       tts:{t22_3:{lbl:'Must I answer every question?',txt:'In Singapore, unlike many other jurisdictions, you are generally required to answer police questions truthfully during investigation.',type:'obligation'},
+            t22_4:{lbl:'The compelled-testimony protection',txt:'You can be forced to answer, but your answers cannot be used against you at trial — UNLESS you lie. The main risk is lying, not truthfully incriminating yourself.',type:'criminal'}},
+       sum:'You must answer police questions truthfully. Your answers cannot be used against you at trial — but lying to police is itself an offence.'}
+    ],
+    cases:[
+      {name:'Sim Cheng Hui v PP [1998]',cite:'[1998] 1 SLR(R) 234 (HC)',desc:'s 22 statements are admissible only if the voluntariness test under s 258 is also satisfied — s 22 compulsion does not override voluntariness.',tc:'tk',tt:'Compulsion vs voluntariness'},
+      {name:'Mohamed Bachu Miah v PP [1993]',cite:'[1993] 1 SLR(R) 892 (CA)',desc:'Protection against self-incrimination under s 22(2) applies only to the specific statement — collateral evidence gathered as a result may still be admissible.',tc:'tc',tt:'Incrimination scope'}
+    ],
+    debates:[{date:'Parl Debates, 18 May 2010',spk:'K Shanmugam, Minister for Law',q:'The compelled-but-protected framework of s 22 is a balance. We need witnesses and suspects to cooperate with investigations, but protect them from direct self-incrimination at trial.'}],
+    related:['s 258 — Admissibility','s 23 — Rights on arrest','Penal Code s 193 — False evidence']
+  },
+  s258:{
+    title:'s 258 — Admissibility of statements',
+    provs:[
+      {subs:'(1)',tags:['obligation','criminal'],
+       text:'A statement made by a person is admissible if it is <span class="ho" data-tt="t258_1" data-type="obligation">proved to have been made voluntarily</span>. A statement is voluntary if it is not made as a result of any <span class="hk" data-tt="t258_2" data-type="criminal">threat, inducement or promise</span> having reference to the charge against the accused.',
+       tts:{t258_1:{lbl:'What does "voluntarily" mean?',txt:'Your statement can only be used against you in court if you gave it freely. If police pressured or threatened you, or promised leniency, that statement may be excluded from evidence.',type:'obligation'},
+            t258_2:{lbl:'Threat, inducement, or promise',txt:'Courts construe this broadly. "We will let you go if you confess" is an inducement. Keeping you awake for 20 hours before questioning may constitute oppressive circumstances. Challenge this via a voir dire.',type:'criminal'}},
+       sum:'Your statement to police can only be used in court if you gave it freely — without threats, promises, or inducements.'},
+      {subs:'(2)',tags:['civil'],
+       text:'A statement shall not be inadmissible merely because it was made in the <span class="hc" data-tt="t258_3" data-type="civil">absence of a legal adviser</span>.',
+       tts:{t258_3:{lbl:'Right to have a lawyer in the room?',txt:'Under Singapore law, you do NOT have the right to have your lawyer physically present when making a statement to police. You can consult your lawyer before, but not during, the recording of the statement.',type:'civil'}},
+       sum:'You have no right to have your lawyer present during police questioning — though you can consult one beforehand.'}
+    ],
+    cases:[
+      {name:'PP v Tan Boon Tat [1990]',cite:'[1990] 1 SLR(R) 287 (HC)',desc:'A promise of bail in exchange for a statement renders it involuntary and inadmissible, even if made by a junior officer without authority.',tc:'tk',tt:'Bail promise — inducement'},
+      {name:'Gulam bin Notan v PP [1999]',cite:'[1999] 1 SLR(R) 498 (CA)',desc:'Oppressive circumstances (prolonged questioning, sleep deprivation) can render a statement involuntary even without explicit threats.',tc:'tk',tt:'Oppressive circumstances'},
+      {name:'Poh Kay Keong v PP [1995]',cite:'[1995] 3 SLR(R) 887 (CA)',desc:'Established the voir dire procedure — where voluntariness is disputed, a mini-trial within the main trial determines admissibility.',tc:'tc',tt:'Voir dire procedure'}
+    ],
+    debates:[
+      {date:'Parl Debates, 18 May 2010',spk:'K Shanmugam, Minister for Law',q:'Section 258 maintains voluntariness as the cornerstone of statement admissibility. The absence of a right to counsel during questioning is a considered policy choice balancing investigative efficacy with fairness.'},
+      {date:'Parl Debates, 19 May 2010',spk:'Christopher de Souza, PAP',q:'The voluntariness requirement is meaningful. Courts consistently hold that the threshold is objective — police cannot simply assert a statement was voluntary.'}
+    ],
+    related:['s 22 — Duty to give statement','s 23 — Rights on arrest','Evidence Act s 24 — Confessions']
+  }
+};
+
+var activeFilter='all', activeSection='s17';
+
+function tagColor(tc){
+  if(tc==='to') return {bg:'#0c2040',col:'#6aa3d5'};
+  if(tc==='tc') return {bg:'#2a1f00',col:'#d4a44c'};
+  return {bg:'#2a0a0a',col:'#d47070'};
+}
+
+function renderSection(sid){
+  var sec=DATA[sid]; if(!sec) return;
+  activeSection=sid;
+  document.getElementById('sec-heading').textContent=sec.title;
+  document.querySelectorAll('.toc-item').forEach(function(el){
+    el.classList.toggle('active', el.getAttribute('data-sec')===sid);
+  });
+  renderProvs(sec);
+  renderRight(sec);
+}
+
+function renderProvs(sec){
+  var list=document.getElementById('prov-list');
+  list.innerHTML='';
+  sec.provs.forEach(function(p){
+    var hasO=p.tags.indexOf('obligation')>=0;
+    var hasC=p.tags.indexOf('civil')>=0;
+    var hasK=p.tags.indexOf('criminal')>=0;
+    var show=activeFilter==='all'||(activeFilter==='obligation'&&hasO)||(activeFilter==='civil'&&hasC)||(activeFilter==='criminal'&&hasK);
+    var tagHTML='';
+    if(hasO) tagHTML+='<span class="tag to">Civil obligation</span>';
+    if(hasC) tagHTML+='<span class="tag tc">Civil penalty</span>';
+    if(hasK) tagHTML+='<span class="tag tk">Criminal consequence</span>';
+    var ttHTML='';
+    if(p.tts){
+      Object.keys(p.tts).forEach(function(k){
+        var tt=p.tts[k];
+        var cls='tt tt-'+tt.type;
+        ttHTML+='<div class="'+cls+'" id="'+k+'"><div class="tt-lbl">'+tt.lbl+'</div><div class="tt-txt">'+tt.txt+'</div></div>';
+      });
+    }
+    var div=document.createElement('div');
+    div.className='prov'+(show?'':' dim');
+    div.innerHTML='<div class="prov-head"><span class="pnum">'+p.subs+'</span><div><div class="pname">'+sec.title+'</div><div class="tags">'+tagHTML+'</div></div></div>'
+      +'<div class="prov-body"><div class="ltext">'+p.text+'</div>'+ttHTML
+      +'<div class="sumbar"><div><div class="sum-label"><i class="ti ti-bulb" aria-hidden="true" style="font-size:11px;margin-right:3px"></i>In plain terms</div><div class="sum-text">'+p.sum+'</div></div></div></div>';
+    list.appendChild(div);
+  });
+  list.querySelectorAll('[data-tt]').forEach(function(el){
+    el.addEventListener('click',function(){
+      var id=this.getAttribute('data-tt');
+      var box=document.getElementById(id);
+      if(box) box.classList.toggle('show');
+    });
+  });
+}
+
+function renderRight(sec){
+  var cl=document.getElementById('case-list');
+  var dl=document.getElementById('debate-list');
+  var rl=document.getElementById('related-list');
+  cl.innerHTML=(sec.cases||[]).map(function(c){
+    var col=tagColor(c.tc);
+    return '<div class="cc"><div class="cn">'+c.name+'</div><div class="cit">'+c.cite+'</div><div class="cdesc">'+c.desc+'</div>'
+      +'<span class="ctag" style="background:'+col.bg+';color:'+col.col+'">'+c.tt+'</span></div>';
+  }).join('');
+  dl.innerHTML=(sec.debates||[]).map(function(d){
+    return '<div class="dc"><div class="ddate">'+d.date+'</div><div class="dspk">'+d.spk+'</div><div class="dquote">'+d.q+'</div></div>';
+  }).join('');
+  rl.innerHTML=(sec.related||[]).map(function(r){
+    return '<span class="rpill"><i class="ti ti-file-text" aria-hidden="true" style="font-size:11px"></i>'+r+'</span>';
+  }).join('');
+}
+
+function setFilter(f){
+  activeFilter=f;
+  document.querySelectorAll('.fbtn').forEach(function(b){b.className='fbtn';});
+  var cls={all:'fa',obligation:'fo',civil:'fc',criminal:'fk'};
+  document.getElementById('btn-'+f).className='fbtn '+cls[f];
+  renderProvs(DATA[activeSection]);
+}
+
+document.querySelectorAll('.toc-item').forEach(function(el){
+  el.addEventListener('click',function(){renderSection(this.getAttribute('data-sec'));});
+});
+document.getElementById('btn-all').addEventListener('click',function(){setFilter('all');});
+document.getElementById('btn-obligation').addEventListener('click',function(){setFilter('obligation');});
+document.getElementById('btn-civil').addEventListener('click',function(){setFilter('civil');});
+document.getElementById('btn-criminal').addEventListener('click',function(){setFilter('criminal');});
+
+renderSection('s17');
+</script>
